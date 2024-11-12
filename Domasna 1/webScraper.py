@@ -21,8 +21,14 @@ def fetch_and_filter_tickers(url):
 
     response = session.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
-    AllTickers = soup.select("#Code option")
-    tickers = [option['value'] for option in AllTickers if not re.search(r'\d', option.text)]
+    continuousTable = soup.select_one('#continuousTradingMode-table tbody')
+    auctionTable = soup.select_one('#fixingWith20PercentLimit-table tbody')
+    auctionWithoutPriceLimitTable = soup.select_one('#fixingWithoutLimit-table tbody')
+    symbol_texts1 = [a.text for a in continuousTable.select('a')]
+    symbol_texts2 = [a.text for a in auctionTable.select('a')]
+    symbol_texts3 = [a.text for a in auctionWithoutPriceLimitTable.select('a')]
+    symbol_texts = symbol_texts1 + symbol_texts2 + symbol_texts3
+    tickers = [s for s in symbol_texts if not re.search(r'\d', s)]
     return tickers
 
 
@@ -122,7 +128,7 @@ def fetch_and_store_ticker_data(start_date, ticker, base_url, headers, file_path
 
 
 def main():
-    url = 'https://www.mse.mk/mk/stats/symbolhistory/ALK'
+    url = 'https://www.mse.mk/en/stats/current-schedule'
     base_url = 'https://www.mse.mk/mk/stats/symbolhistory/ALK'
     headers = {"Content-Type": "application/json"}
 
