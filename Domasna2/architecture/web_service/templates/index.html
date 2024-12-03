@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tickers</title>
+</head>
+<body>
+<h1>Welcome to the Ticker Web App</h1>
+    <button onclick="startScraping()">Start Scraping</button>
+    <script>
+        function startScraping() {
+            fetch('/scrape', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

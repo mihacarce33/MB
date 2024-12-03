@@ -1,0 +1,9 @@
+flask
+flask-sqlalchemy
+flask-migrate
+requests
+beautifulsoup4
+lxml
+pandas
+mysql-connector-python
+python-dateutil

@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  scraping-service:
+    build:
+      context: ./scraping_service
+    ports:
+      - "5001:5001"
+    depends_on:
+      - data-processing-service
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB: ${MYSQL_DB}
+
+  data-processing-service:
+    build:
+      context: ./data_processing_service
+    ports:
+      - "5002:5002"
+    depends_on:
+      - storage-service
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB: ${MYSQL_DB}
+
+  storage-service:
+    build:
+      context: ./storage_service
+    ports:
+      - "5003:5003"
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB: ${MYSQL_DB}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  web-service:
+    build:
+      context: ./web_service
+    ports:
+      - "5004:5000"
+
+  mysql-db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+    driver: local
