@@ -7,3 +7,5 @@ lxml
 pandas
 mysql-connector-python
 python-dateutil
+pymysql
+joblib

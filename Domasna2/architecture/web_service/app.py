@@ -10,13 +10,13 @@ def index():
 @app.route('/scrape', methods=['POST'])
 def scrape():
     # Call scraping service to trigger scraping
-    requests.post('http://scraping_service:5001/scrape-data', json={'tickers': ['ticker1', 'ticker2']})
+    requests.post('http://scraping-service:5001/scrape-data')
     return jsonify({'message': 'Scraping complete!'})
 
 @app.route('/ticker/<ticker>')
 def get_ticker_data(ticker):
     # Call the storage service to get data for the specific ticker
-    response = requests.get(f'http://storage_service:5003/ticker-data/{ticker}')
+    response = requests.get(f'127.0.0.1:5003/ticker-data/{ticker}')
     data = response.json().get('data')
     return render_template('ticker.html', ticker=ticker, data=data)
 

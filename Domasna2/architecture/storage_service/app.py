@@ -1,9 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_migrate import Migrate
-
-
-from Domasna2.architecture.storage_service.services.storing_data import insert_data_into_table
-from stash.models import db
+from services.storing_data import insert_data_into_table
+from models import db
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Mihail123@localhost/MB_db'

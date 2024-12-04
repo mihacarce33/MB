@@ -1,9 +1,12 @@
-version: '3'
+version: '3.8'
 
 services:
   scraping-service:
     build:
       context: ./scraping_service
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     ports:
       - "5001:5001"
     depends_on:
@@ -13,6 +16,8 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DB: ${MYSQL_DB}
+    networks:
+      - app-network
 
   data-processing-service:
     build:
@@ -26,6 +31,9 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DB: ${MYSQL_DB}
+      PYTHONPATH: /app
+    networks:
+      - app-network
 
   storage-service:
     build:
@@ -39,12 +47,18 @@ services:
       MYSQL_DB: ${MYSQL_DB}
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
 
   web-service:
     build:
       context: ./web_service
     ports:
       - "5004:5000"
+    depends_on:
+      - scraping-service
+    networks:
+      - app-network
 
   mysql-db:
     image: mysql:5.7
@@ -57,6 +71,12 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   mysql_data:
