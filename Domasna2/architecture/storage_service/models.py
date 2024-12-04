@@ -2,10 +2,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 class Ticker(db.Model):
     __tablename__ = 'Tickers'
     id = db.Column(db.Integer, primary_key=True)
     ticker = db.Column(db.String(255), unique=True, nullable=False)
+
 
 class TickerData(db.Model):
     __tablename__ = 'ticker_data'

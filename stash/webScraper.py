@@ -15,20 +15,21 @@ from mysql.connector import Error
 
 start_time = time.time()
 
+
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="Mihail123",
+        password="finki123",
         database="MB_db"
     )
+
 
 def get_last_date_for_ticker(ticker):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Query to get the last date from the ticker_data table for the given ticker
         query = """
         SELECT MAX(date) 
         FROM ticker_data
@@ -38,7 +39,7 @@ def get_last_date_for_ticker(ticker):
         cursor.execute(query, (ticker,))
         result = cursor.fetchone()
 
-        return result[0]  # Returns None if no records exist for the ticker
+        return result[0]
     except Error as e:
         print(f"Error fetching last date for {ticker}: {e}, Or there is no data for ticker {ticker}")
         return None
@@ -53,7 +54,6 @@ def insert_data_into_table(ticker, data):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Insert ticker into Tickers table (only if it does not exist)
         insert_ticker_query = """
         INSERT INTO Tickers (ticker)
         VALUES (%s)
@@ -62,8 +62,6 @@ def insert_data_into_table(ticker, data):
         cursor.execute(insert_ticker_query, (ticker,))
         conn.commit()
 
-        # Now insert the ticker data into ticker_data table
-        # Insert the ticker name (instead of ticker_id) into ticker_data
         insert_data_query = """
                 INSERT INTO ticker_data (ticker, date, last_transaction_price, max_price, min_price,
                                          average_price, percent_change, quantity, best_turnover, total_turnover)
@@ -79,8 +77,7 @@ def insert_data_into_table(ticker, data):
                 total_turnover = VALUES(total_turnover);
                 """
 
-        # Insert data with ticker name directly
-        data_with_ticker = [(ticker, *row) for row in data]  # Use ticker name, not ticker_id
+        data_with_ticker = [(ticker, *row) for row in data]
 
         cursor.executemany(insert_data_query, data_with_ticker)
         conn.commit()
@@ -111,6 +108,7 @@ def fetch_and_filter_tickers(url):
     tickers = [s for s in symbol_texts if not re.search(r'\d', s)]
     return tickers
 
+
 def fetch_and_store_ticker_data(start_date, ticker, base_url, headers):
     dataDF = []
     session = requests.Session()
@@ -121,7 +119,8 @@ def fetch_and_store_ticker_data(start_date, ticker, base_url, headers):
     today = datetime.now()
 
     while start_date < today:
-        to_date = today if start_date.year == today.year else start_date + relativedelta(years=1) - relativedelta(days=1)
+        to_date = today if start_date.year == today.year else start_date + relativedelta(years=1) - relativedelta(
+            days=1)
         from_date_str = start_date.strftime("%d.%m.%Y")
         to_date_str = to_date.strftime("%d.%m.%Y")
 
@@ -156,10 +155,12 @@ def fetch_and_store_ticker_data(start_date, ticker, base_url, headers):
     insert_data_into_table(ticker, dataDF)
     print(f"{ticker} data stored successfully.")
 
+
 def scrape_ticker(ticker, base_url, headers):
     last_date = get_last_date_for_ticker(ticker)
     start_date = (last_date + relativedelta(days=1)) if last_date else datetime.now() - relativedelta(years=10)
     fetch_and_store_ticker_data(start_date, ticker, base_url, headers)
+
 
 def main():
     url = 'https://www.mse.mk/en/stats/current-schedule'

@@ -5,7 +5,7 @@ def get_db_connection():
     return mysql.connector.connect(
         host="mysql-db",
         user="root",
-        password="Mihail123",
+        password="finki123",
         database="MB_db"
     )
 
@@ -15,7 +15,7 @@ def insert_data_into_table(ticker, data):
         conn = mysql.connector.connect(
             host='mysql-db',
             user='root',
-            password='Mihail123',
+            password='finki123',
             database='MB_db'
         )
         if conn.is_connected():
@@ -44,8 +44,7 @@ def insert_data_into_table(ticker, data):
                     total_turnover = VALUES(total_turnover);
                     """
 
-            # Insert data with ticker name directly
-            data_with_ticker = [(ticker, *row) for row in data]  # Use ticker name, not ticker_id
+            data_with_ticker = [(ticker, *row) for row in data]
 
             cursor.executemany(insert_data_query, data_with_ticker)
             conn.commit()

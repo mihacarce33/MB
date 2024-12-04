@@ -8,8 +8,6 @@ Create Date: 2024-12-02 20:13:38.886668
 from alembic import op
 import sqlalchemy as sa
 
-
-# revision identifiers, used by Alembic.
 revision = 'af15d6cf8f9d'
 down_revision = None
 branch_labels = None
@@ -17,14 +15,12 @@ depends_on = None
 
 
 def upgrade():
-    # Create `Tickers` table
     op.create_table(
         'Tickers',
         sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
         sa.Column('ticker', sa.String(255), nullable=False, unique=True)
     )
 
-    # Create `ticker_data` table
     op.create_table(
         'ticker_data',
         sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
@@ -43,8 +39,6 @@ def upgrade():
 
 
 def downgrade():
-    # Drop `ticker_data` table
     op.drop_table('ticker_data')
 
-    # Drop `Tickers` table
     op.drop_table('Tickers')

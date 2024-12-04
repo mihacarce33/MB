@@ -1,20 +1,21 @@
 import mysql.connector
 from mysql.connector import Error
 
+
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="Mihail123",
+        password="finki123",
         database="MB_db"
     )
+
 
 def get_last_date_for_ticker(ticker):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Query to get the last date from the ticker_data table for the given ticker
         query = """
         SELECT MAX(date) 
         FROM ticker_data
@@ -24,7 +25,7 @@ def get_last_date_for_ticker(ticker):
         cursor.execute(query, (ticker,))
         result = cursor.fetchone()
 
-        return result[0]  # Returns None if no records exist for the ticker
+        return result[0]
     except Error as e:
         print(f"Error fetching last date for {ticker}: {e}, Or there is no data for ticker {ticker}")
         return None
@@ -39,7 +40,6 @@ def insert_data_into_table(ticker, data):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Insert ticker into Tickers table (only if it does not exist)
         insert_ticker_query = """
         INSERT INTO Tickers (ticker)
         VALUES (%s)
@@ -48,7 +48,6 @@ def insert_data_into_table(ticker, data):
         cursor.execute(insert_ticker_query, (ticker,))
         conn.commit()
 
-        # Now insert the ticker data into ticker_data table
         insert_data_query = """
                 INSERT INTO ticker_data (ticker, date, last_transaction_price, max_price, min_price,
                                          average_price, percent_change, quantity, best_turnover, total_turnover)
@@ -64,8 +63,7 @@ def insert_data_into_table(ticker, data):
                 total_turnover = VALUES(total_turnover);
                 """
 
-        # Insert data with ticker name directly
-        data_with_ticker = [(ticker, *row) for row in data]  # Use ticker name, not ticker_id
+        data_with_ticker = [(ticker, *row) for row in data]
 
         cursor.executemany(insert_data_query, data_with_ticker)
         conn.commit()

@@ -12,9 +12,10 @@ def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="Mihail123",
+        password="finki123",
         database="MB_db"
     )
+
 
 def fetch_and_store_ticker_data(start_date, ticker, base_url, headers):
     dataDF = []
@@ -62,13 +63,14 @@ def fetch_and_store_ticker_data(start_date, ticker, base_url, headers):
 
     return dataDF
 
+
 def get_last_date_for_ticker(ticker):
     conn = None
     try:
         conn = mysql.connector.connect(
             host='mysql-db',
             user='root',
-            password='Mihail123',
+            password='finki123',
             database='MB_db'
         )
         if conn.is_connected():
@@ -85,7 +87,7 @@ def get_last_date_for_ticker(ticker):
 
             if result['MAX(date)'] is None:
                 return None
-            return result['MAX(date)']  # Returns None if no records exist for the ticker
+            return result['MAX(date)']
     except Error as e:
         print(f"Error fetching last date for {ticker}: {e}, Or there is no data for ticker {ticker}", flush=True)
         return None
@@ -93,6 +95,7 @@ def get_last_date_for_ticker(ticker):
         if conn.is_connected():
             cursor.close()
             conn.close()
+
 
 def scrape_ticker(ticker, base_url, headers):
     last_date = get_last_date_for_ticker(ticker)
@@ -106,4 +109,3 @@ def scrape_ticker(ticker, base_url, headers):
         print(f"Data for {ticker} successfully sent to storage service.", flush=True)
     else:
         print(f"Failed to send data for {ticker}. Status code: {response.status_code}", flush=True)
-    # return dataTicker
