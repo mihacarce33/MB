@@ -8,3 +8,4 @@ pandas
 mysql-connector-python
 python-dateutil
 pymysql
+python-dotenv

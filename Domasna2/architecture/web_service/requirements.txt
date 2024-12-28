@@ -8,3 +8,14 @@ pandas
 mysql-connector-python
 python-dateutil
 pymysql
+python-dotenv
+ta
+numpy
+matplotlib
+scikit-learn
+keras
+tensorflow==2.18.0
+tf-keras
+transformers
+joblib
+torch

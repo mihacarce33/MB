@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Stock Analysis Dashboard</h1>
+    <form id="stockForm">
+        <label for="ticker">Enter Ticker:</label>
+        <input type="text" id="ticker" name="ticker" required>
+        <button type="button" onclick="fetchData()">Get Stock Data</button>
+        <button type="button" onclick="fetchIndicators()">Get Indicators</button>
+        <button type="button" onclick="fetchSignals()">Get Signals</button>
+        <button type="button" onclick="fetchTrendAnalysis()">Get Trend Analysis</button>
+    </form>
+
+    <h2>Results</h2>
+    <pre id="results">Results will appear here...</pre>
+
+    <script>
+        const baseURL = 'http://localhost:5004';
+
+        function fetchData() {
+            const ticker = document.getElementById('ticker').value;
+            axios.get(`${baseURL}/stock_data?ticker=${ticker}`)
+                .then(response => document.getElementById('results').textContent = JSON.stringify(response.data, null, 2))
+                .catch(error => document.getElementById('results').textContent = error.response.data.error);
+        }
+
+        function fetchIndicators() {
+            const ticker = document.getElementById('ticker').value;
+            axios.get(`${baseURL}/indicators?ticker=${ticker}`)
+                .then(response => document.getElementById('results').textContent = JSON.stringify(response.data, null, 2))
+                .catch(error => document.getElementById('results').textContent = error.response.data.error);
+        }
+
+        function fetchSignals() {
+            const ticker = document.getElementById('ticker').value;
+            axios.get(`${baseURL}/signals?ticker=${ticker}`)
+                .then(response => document.getElementById('results').textContent = JSON.stringify(response.data, null, 2))
+                .catch(error => document.getElementById('results').textContent = error.response.data.error);
+        }
+
+        function fetchTrendAnalysis() {
+            const ticker = document.getElementById('ticker').value;
+            axios.get(`${baseURL}/trend_analysis?ticker=${ticker}`)
+                .then(response => document.getElementById('results').textContent = JSON.stringify(response.data, null, 2))
+                .catch(error => document.getElementById('results').textContent = error.response.data.error);
+        }
+    </script>
+</body>
+</html>

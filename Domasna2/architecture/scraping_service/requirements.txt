@@ -9,3 +9,4 @@ mysql-connector-python
 python-dateutil
 pymysql
 joblib
+python-dotenv

@@ -9,29 +9,11 @@ services:
       - 1.1.1.1
     ports:
       - "5001:5001"
-    depends_on:
-      - data-processing-service
     environment:
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DB: ${MYSQL_DB}
-    networks:
-      - app-network
-
-  data-processing-service:
-    build:
-      context: ./data_processing_service
-    ports:
-      - "5002:5002"
-    depends_on:
-      - storage-service
-    environment:
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DB: ${MYSQL_DB}
-      PYTHONPATH: /app
     networks:
       - app-network
 
@@ -59,13 +41,22 @@ services:
       - scraping-service
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4g
+        reservations:
+          cpus: "1.0"
+          memory: 2g
 
   mysql-db:
     image: mysql:5.7
+    platform: linux/amd64
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DB}
-      MYSQL_USER: ${MYSQL_USER}
+#      MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3307:3306"
@@ -73,6 +64,12 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - app-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
 
 networks:
   app-network:

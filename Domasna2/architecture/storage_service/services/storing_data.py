@@ -1,13 +1,13 @@
 import mysql.connector
 from mysql.connector import Error
+from dotenv import load_dotenv
+import os
 
-def get_db_connection():
-    return mysql.connector.connect(
-        host="mysql-db",
-        user="root",
-        password="finki123",
-        database="MB_db"
-    )
+load_dotenv()
+db_password = os.getenv("MYSQL_PASSWORD")
+db_user = os.getenv("MYSQL_USER")
+db_name = os.getenv("MYSQL_DB")
+db_host = os.getenv("MYSQL_HOST")
 
 def insert_data_into_table(ticker, data):
     conn = None
@@ -15,7 +15,7 @@ def insert_data_into_table(ticker, data):
         conn = mysql.connector.connect(
             host='mysql-db',
             user='root',
-            password='finki123',
+            password='Mihail123',
             database='MB_db'
         )
         if conn.is_connected():
