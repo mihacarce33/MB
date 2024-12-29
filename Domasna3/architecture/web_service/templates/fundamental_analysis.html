@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamental Stock Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .content {
+            text-align: center;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .input-box {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+        .submit-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .result-item {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .result-item h3 {
+            color: #4CAF50;
+        }
+        .result-item p {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Fundamental Stock Analysis</h1>
+
+        <div class="form-container">
+            <form action="/fundamental-analysis" method="get">
+                <input type="text" name="ticker" class="input-box" placeholder="Enter Ticker (e.g., AAPL)" required>
+                <button type="submit" class="submit-btn">Analyze</button>
+            </form>
+        </div>
+
+        <div class="results">
+            {% if results %}
+                {% for result in results %}
+                    <div class="result-item">
+                        <h3>News:</h3>
+                        <p>{{ result['news'] }}</p>
+                        <h3>Sentiment: {{ result['sentiment'] }} (Confidence: {{ result['confidence'] * 100 | round(2) }}%)</h3>
+                        <h3>Recommendation: {{ result['recommendation'] }}</h3>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No results available. Please try again.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

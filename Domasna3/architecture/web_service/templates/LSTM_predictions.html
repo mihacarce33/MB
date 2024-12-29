@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LSTM Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .content {
+            text-align: center;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .input-box {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+        .submit-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .plot {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .r2 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>LSTM Prediction</h1>
+
+        <!-- Form to input ticker -->
+        <div class="form-container">
+            <form action="/lstm_prediction" method="get">
+                <input type="text" name="ticker" class="input-box" placeholder="Enter Ticker (e.g., AAPL)" required>
+                <button type="submit" class="submit-btn">Analyze</button>
+            </form>
+        </div>
+
+        {% if plot_url %}
+            <!-- Display the plot -->
+            <div class="plot">
+                <img src="{{ plot_url }}" alt="LSTM Prediction Plot">
+            </div>
+
+            <!-- Display R² Score -->
+            <div class="r2">
+                <p>R² Score: {{ r2_score }}</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
