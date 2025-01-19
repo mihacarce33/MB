@@ -4,7 +4,16 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
+import mysql.connector
+from mysql.connector import Error
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+db_password = os.getenv("MYSQL_ROOT_PASSWORD")
+db_user = os.getenv("MYSQL_USER")
+db_name = os.getenv("MYSQL_DB")
+db_host = os.getenv("MYSQL_HOST")
 
 def fetch_and_store_ticker_data(start_date, ticker, base_url, headers):
     dataDF = []
@@ -37,7 +46,7 @@ def fetch_and_store_ticker_data(start_date, ticker, base_url, headers):
             tds = row.find_all("td")
             if tds and all(tds[i].text.strip() != "" for i in range(len(tds))):
                 dataDF.append((
-                    datetime.strptime(tds[0].text.strip(), "%d.%m.%Y"),
+                    datetime.strptime(tds[0].text.strip(), "%d.%m.%Y").strftime("%Y-%m-%d"),
                     float(tds[1].text.strip().replace('.', '').replace(',', '.')),
                     float(tds[2].text.strip().replace('.', '').replace(',', '.')),
                     float(tds[3].text.strip().replace('.', '').replace(',', '.')),
@@ -51,3 +60,50 @@ def fetch_and_store_ticker_data(start_date, ticker, base_url, headers):
         start_date += relativedelta(years=1)
 
     return dataDF
+
+
+def get_last_date_for_ticker(ticker):
+    conn = None
+    try:
+        conn = mysql.connector.connect(
+            host='mysql-db',
+            user='root',
+            password='Mihail123',
+            database='MB_db'
+        )
+        if conn.is_connected():
+            cursor = conn.cursor(dictionary=True)
+
+            query = """
+            SELECT MAX(date) 
+            FROM ticker_data
+            JOIN Tickers ON ticker_data.ticker = Tickers.id
+            WHERE Tickers.ticker = %s;
+            """
+            cursor.execute(query, (ticker,))
+            result = cursor.fetchone()
+
+            if result['MAX(date)'] is None:
+                return None
+            return result['MAX(date)']
+    except Error as e:
+        print(f"Error fetching last date for {ticker}: {e}, Or there is no data for ticker {ticker}", flush=True)
+        return None
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
+
+
+def scrape_ticker(ticker, base_url, headers):
+    last_date = get_last_date_for_ticker(ticker)
+    start_date = (last_date + relativedelta(days=1)) if last_date else datetime.now() - relativedelta(years=10)
+    dataTicker = fetch_and_store_ticker_data(start_date, ticker, base_url, headers)
+    response = requests.post("http://storage-service:5003/insert-data", json={
+        'ticker': ticker,
+        'data': dataTicker
+    })
+    if response.status_code == 200:
+        print(f"Data for {ticker} successfully sent to storage service.", flush=True)
+    else:
+        print(f"Failed to send data for {ticker}. Status code: {response.status_code}", flush=True)
